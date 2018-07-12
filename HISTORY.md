@@ -1,3 +1,7 @@
+v1.1.4
+==================
+* Add error step (PR #3) Thanks to @Ledivin)
+
 v1.1.3
 ==================
 * add demo helpers css to style demo buttons
