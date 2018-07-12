@@ -37,6 +37,7 @@ Custom property | Description
 `--px-steps-text-color--pressed` | Text color for steps when pressed
 `--px-steps-text-color--current` | Text color for the current highlighted step
 `--px-steps-text-color--completed` | Text color for the completed steps
+`--px-steps-text-color--errored` | Text color for the errored steps
 `--px-steps-min-width` | Minimum width of each step in the stepper
 
 -->
@@ -47,11 +48,11 @@ Custom property | Description
 
     <div class="container flex flex--top">
       <template id="steps" is="dom-repeat" items="[[items]]">
-        <div class$="step-wrapper [[_getStepState(item,index,currentStep,completed)]]">
+        <div class$="[[_getStepState(item,index,currentStep,completed,errored,completed.*,errored.*)]]">
           <div class="step-connector"></div>
           <div id="[[item.id]]" class="step-item" on-tap="_handleTap">
             <div class="step-icon">
-              <px-icon icon="px-nav:[[_getIcon(item,completed,completed.*)]]"></px-icon>
+              <px-icon icon="px-nav:[[_getIcon(item,completed,errored,completed.*,errored.*)]]"></px-icon>
             </div>
             <div class="step-label">[[item.label]]</div>
           </div>
@@ -89,6 +90,16 @@ Custom property | Description
           }
         },
         /**
+        * An array of IDs corresponding to items in the steps array which
+        * should be marked as errored.
+        */
+        errored: {
+          type: Array,
+          value: function () {
+            return [];
+          }
+        },
+        /**
          * The array index of the currently active step.
          */
         currentStep: {
@@ -108,10 +119,31 @@ Custom property | Description
         if (this.completed.indexOf(id) === -1) {
           this.push('completed', id);
         }
+        var erroredIndex = this.errored.indexOf(id);
+        if (erroredIndex > -1) {
+          this.splice('errored', erroredIndex, 1);
+        }
 
         // Select next step, if there is one
         if (this.currentStep < this.items.length) {
           this.next();
+        }
+      },
+      /**
+       * Sets the step at the passed index to error state.
+       */
+      error: function (index) {
+        if (!this.items || this.items.length <= 0) {
+          console.warn("Can't complete step: the steps array is empty or undefined.");
+          return;
+        }
+        var id = this.items[index].id;
+        if (this.errored.indexOf(id) === -1) {
+          this.push('errored', id);
+        }
+        var completedIndex = this.completed.indexOf(id);
+        if (completedIndex > -1) {
+          this.splice('completed', completedIndex, 1);
         }
       },
       /**
@@ -155,18 +187,30 @@ Custom property | Description
       /**
       * Calculates which icon to display for a given node.
       */
-      _getIcon: function (item, completed) {
-        return this.completed.indexOf(item.id) > -1 ? "confirmed" : "unconfirmed";
+      _getIcon: function (item, completed, errored) {
+        if (this.errored.indexOf(item.id) > -1) {
+          return "close";
+        } else if (this.completed.indexOf(item.id) > -1) {
+          return "confirmed";
+        }
+        return "unconfirmed";
       },
       /**
       * Calculates which class to assign to a given node.
       */
-      _getStepState: function (item, index, currentStep, completed) {
+      _getStepState: function (item, index, currentStep, completed, errored) {
+        let classes = [ 'step-wrapper' ];
         if (index === currentStep) {
-          return 'current';
-        } else if (completed.indexOf(item.id) > -1) {
-          return 'complete';
+          classes.push('current');
         }
+
+        if (errored.indexOf(item.id) > -1) {
+          classes.push('error');
+        } else if (completed.indexOf(item.id) > -1) {
+          classes.push('complete');
+        }
+
+        return classes.join(' ');
       },
       /**
       * Fires an event when a node is tapped upon.

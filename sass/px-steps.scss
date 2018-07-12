@@ -63,6 +63,13 @@
     &.complete {
       color: var(--px-steps-text-color--completed, darkgray);
     }
+    &.error {
+      color: var(--px-steps-text-color--error, red);
+      px-icon {
+        stroke-width: 2;
+        color: var(--px-steps-text-color--error, red);
+      }
+    }
     :hover {
       color: var(--px-steps-text-color--hover, blue);
     }

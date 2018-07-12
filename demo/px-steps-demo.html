@@ -66,6 +66,14 @@ limitations under the License.
           <button class="btn" on-click="previous">Previous</button>
           <button class="btn" on-click="complete">Complete Current Step</button>
           <button class="btn" on-click="next">Next</button>
+          <button class="btn" on-click="error">Error Step: </button>
+          <select id="errorIndex">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+          </select>
         </div>
         <template is="dom-if" if="[[clicked]]">
           <div style="margin-top: 1rem;">
@@ -149,6 +157,10 @@ limitations under the License.
 
     complete: function() {
       this.$.stepper.complete();
+    },
+
+    error: function() {
+      this.$.stepper.error(parseInt(this.$.errorIndex.value) - 1);
     },
 
     ready: function() {

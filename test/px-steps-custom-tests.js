@@ -124,6 +124,58 @@ describe('Basic tests for px-steps', function () {
       done();
     });
   });
+  it('marks the first step as errored', function (done) {
+    flush(function () {
+      var steps = Polymer.dom(stepper.root).querySelectorAll('.step-wrapper'),
+          icon = steps[0].querySelector('px-icon');
+      stepper.error(0);
+      expect(stepper.errored.length).to.equal(1);
+      expect(stepper.errored[0]).to.equal(stepper.items[0].id);
+      expect(stepper.currentStep).to.equal(0);
+      expect(icon.icon).to.equal('px-nav:close');
+      expect(steps[0].classList.contains('current')).to.be.true;
+      expect(steps[0].classList.contains('error')).to.be.true;
+      done();
+    });
+  });
+  it('marks the first step as errored using the property', function (done) {
+    flush(function () {
+      var steps = Polymer.dom(stepper.root).querySelectorAll('.step-wrapper'),
+          icon = steps[0].querySelector('px-icon');
+      stepper.push('errored', stepper.items[0].id);
+      expect(stepper.errored.length).to.equal(1);
+      expect(stepper.currentStep).to.equal(0);
+      expect(icon.icon).to.equal('px-nav:close');
+      expect(steps[0].classList.contains('current')).to.be.true;
+      done();
+    });
+  });
+  it('marks the last step as errored', function (done) {
+    flush(function () {
+      var steps = Polymer.dom(stepper.root).querySelectorAll('.step-wrapper'),
+          icon = steps[4].querySelector('px-icon');
+      stepper.currentStep = 4;
+      stepper.error(4);
+      expect(stepper.errored.length).to.equal(1);
+      expect(stepper.errored[0]).to.equal(stepper.items[4].id);
+      expect(stepper.currentStep).to.equal(4);
+      expect(icon.icon).to.equal('px-nav:close');
+      expect(steps[4].classList.contains('current')).to.be.true;
+      done();
+    });
+  });
+  it('does not store duplicate errored ids', function (done) {
+    flush(function () {
+      var steps = Polymer.dom(stepper.root).querySelectorAll('.step-wrapper'),
+          icon = steps[0].querySelector('px-icon');
+      stepper.error(0);
+      stepper.previous();
+      stepper.error(0);
+      expect(stepper.errored.length).to.equal(1);
+      expect(stepper.errored[0]).to.equal(stepper.items[0].id);
+      done();
+    });
+  });
   it('adds a new step when items is mutated', function (done) {
     stepper.push('items', {"id":"6","label":"Profit!"});
     flush(function () {
