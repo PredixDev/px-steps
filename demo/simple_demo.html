@@ -18,22 +18,38 @@ limitations under the License.
 <html lang="en">
   <head>
     <title>px-steps simple demo</title>
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../../polymer/polymer.html" />
-    <link rel="import" href="../px-steps.html" />
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script type="module" src="../../@polymer/polymer/polymer-legacy.js"></script>
+    <script type="module" src="../px-steps.js"></script>
 
-    <link rel="import" href="../../px-theme/px-theme-styles.html">
+    <script type="module" src="../../px-theme/px-theme-styles.js"></script>
   </head>
 
   <body>
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
       <style include="px-theme-styles" is="custom-style"></style>
-    </custom-style>
-     <px-steps
-      id="stepper"
-      items='[{"id": "1", "label": "Basic Information"},{ "id": "2", "label": "Select Services"},{ "id": "3", "label": "Billing" },{ "id": "4", "label": "Review" },{ "id": "5", "label": "Deploy" }]'
-      completed='["1","2"]'
-      current-step="2">
-    </px-steps>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+     <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<px-steps id="stepper" items="[{&quot;id&quot;: &quot;1&quot;, &quot;label&quot;: &quot;Basic Information&quot;},{ &quot;id&quot;: &quot;2&quot;, &quot;label&quot;: &quot;Select Services&quot;},{ &quot;id&quot;: &quot;3&quot;, &quot;label&quot;: &quot;Billing&quot; },{ &quot;id&quot;: &quot;4&quot;, &quot;label&quot;: &quot;Review&quot; },{ &quot;id&quot;: &quot;5&quot;, &quot;label&quot;: &quot;Deploy&quot; }]" completed="[&quot;1&quot;,&quot;2&quot;]" current-step="2">
+    </px-steps>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
   </body>
 </html>

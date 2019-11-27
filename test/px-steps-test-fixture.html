@@ -19,23 +19,43 @@ limitations under the License.
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
-    <link rel="import" href="../px-steps.html" />
-    <link rel="import" href="../bower_components/px-theme/px-theme-styles.html"/>
-    <script src="px-steps-custom-tests.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
+    <script type="module" src="../px-steps.js"></script>
+    <script type="module" src="../../px-theme/px-theme-styles.js"></script>
+    <script src="./px-steps-custom-tests.js"></script>
   </head>
 
   <body>
-    <custom-style>
-      <style include="px-theme-styles" is="custom-style"></style>
-    </custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
 
-    <test-fixture id="stepper">
+$_documentContainer.innerHTML = `<custom-style>
+      <style include="px-theme-styles" is="custom-style"></style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<test-fixture id="stepper">
       <template>
-        <px-steps items='[{"id":"1","label":"Basic Information"},{"id":"2","label":"Select Services"},{"id":"3","label":"Billing" },{"id":"4","label":"Review" },{"id":"5","label":"Deploy" }]'>
+        <px-steps items="[{&quot;id&quot;:&quot;1&quot;,&quot;label&quot;:&quot;Basic Information&quot;},{&quot;id&quot;:&quot;2&quot;,&quot;label&quot;:&quot;Select Services&quot;},{&quot;id&quot;:&quot;3&quot;,&quot;label&quot;:&quot;Billing&quot; },{&quot;id&quot;:&quot;4&quot;,&quot;label&quot;:&quot;Review&quot; },{&quot;id&quot;:&quot;5&quot;,&quot;label&quot;:&quot;Deploy&quot; }]">
         </px-steps>
       </template>
-    </test-fixture>
+    </test-fixture>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
   </body>
 </html>
